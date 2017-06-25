@@ -1,7 +1,13 @@
 <?php
+error_reporting(0);
 ini_set('display_errors', '0');
-$data_tanggal = date("Y-m-d");
-$val_form = '';
+date_default_timezone_set('Asia/Jakarta');
+$data_tanggal	 = date("Y-m-d");
+$data_jam 		 = date("h:i:s a");
+$detik 			 = date('s');
+$menit 			 = date('i');
+$jam   			 = date('H');
+$val_form 		 = '';
 
     	if(isset($_POST['submit'])) {
 			session_start();
@@ -21,14 +27,17 @@ $val_form = '';
 				case '2 Status': $max_s='2'; break;
 				case '3 Status': $max_s='3'; break;
 				case '4 Status': $max_s='4'; break;
+				case '5 Status': $max_s='5'; break;
+				case '10 Status': $max_s='10'; break;
+				case '15 Status': $max_s='15'; break;
+				case '20 Status': $max_s='20'; break;
+				case '25 Status': $max_s='25'; break;
+				case '30 Status': $max_s='30'; break;
+				case '40 Status': $max_s='40'; break;
 				}
 			$_SESSION['max_status'] = $max_s;
 				switch($auto_timer)
 				{
-				case '1 Menit': $auto_t='60000'; break;
-				case '2 Menit': $auto_t='120000'; break;
-				case '3 Menit': $auto_t='180000'; break;
-				case '4 Menit': $auto_t='240000'; break;
 				case '5 Menit': $auto_t='300000'; break;
 				case '6 Menit': $auto_t='360000'; break;
 				case '7 Menit': $auto_t='420000'; break;
@@ -36,25 +45,80 @@ $val_form = '';
 				case '9 Menit': $auto_t='540000'; break;
 				case '10 Menit': $auto_t='600000'; break;
 				}
-
+/////////////////////////////////////////////////////////////////////////////
+// Ambil nama dan foto
+////////////////////////////////////////////////////////////////////////////
+		$arrContextOptions=array(
+		"ssl"=>array(
+						"verify_peer"=>false,
+						"verify_peer_name"=>false,),
+		); 
+		$get_my_picture		= 'https://graph.facebook.com/me?fields=picture,name&access_token='.$token;
+		$get_my_picture 	= file_get_contents($get_my_picture, false, stream_context_create($arrContextOptions));
+		$get_my_picture 	= json_decode($get_my_picture, true);
+		$idsaya				= $get_my_picture['id'];
+		$namasaya			= $get_my_picture['name'];
+		$url_image			= 'https://graph.facebook.com/'.$idsaya.'/picture?type=normal';
+		
 		echo "
 <center>
+<script type='text/javascript'>
+    var detik = $detik;
+    var menit = $menit;
+    var jam   = $jam;
+    function clock()
+    {
+        if (detik!=0 && detik%60==0) {
+            menit++;
+            detik=0;
+        }
+        second = detik;
+        
+        if (menit!=0 && menit%60==0) {
+            jam++;
+            menit=0;
+        }
+        minute = menit;
+        
+        if (jam!=0 && jam%24==0) {
+            jam=0;
+        }
+        hour = jam;
+        
+        if (detik<10){
+            second='0'+detik;
+        }
+        if (menit<10){
+            minute='0'+menit;
+        }
+        
+        if (jam<10){
+            hour='0'+jam;
+        }
+        waktu = hour+':'+minute+':'+second;
+        
+        document.getElementById('clock').innerHTML = waktu;
+        detik++;
+    }
+    setInterval(clock,1000);
+</script>
 <pre>
-:--- Configuration Info ---:
-<br>
-Max $max_status
-Timer $auto_timer
-<br>
+<img src='$url_image'> \n
+$namasaya \n
+<label id='clock'></label> \n
+:--- Configuration Info ---: \n
+Running from $data_tanggal $data_jam \n
+Max $max_status \n
+Timer $auto_timer \n
 <a href='index.php'> Logout </a>
 </pre>
-<hr>
-			<script type='text/javascript'>
-			var auto_refresh = setInterval(
-			function () {
-			$('#load_content').load('lib/libfacebook.php').fadeIn('slow');
-			}, $auto_t); // refresh setiap milliseconds
-			</script>
-			";
+<script type='text/javascript'>
+var auto_refresh = setInterval(
+function () {
+$('#load_content').load('lib/libfacebook.php').fadeIn('slow');
+}, $auto_t); // refresh setiap milliseconds
+</script>
+";
 }
 else
 {
@@ -69,7 +133,8 @@ else
 	}
 }
 ?>
-<style>#input_form {
+<style>
+#input_form {
     background: #transparent;
     border: 1px solid #ccc;
     margin: auto;
@@ -98,11 +163,14 @@ else
  <option>2 Status</option>
  <option>3 Status</option>
  <option>4 Status</option>
+ <option>5 Status</option>
+ <option>10 Status</option>
+ <option>15 Status</option>
+ <option>20 Status</option>
+ <option>25 Status</option>
+ <option>30 Status</option>
+ <option>40 Status</option>
  <tr><td>Timer<td><select name="auto_timer" id="auto_timer" class="texbox" required="required" <?php echo $val_form;?>>
- <option>1 Menit</option>
- <option>2 Menit</option>
- <option>3 Menit</option>
- <option>4 Menit</option>
  <option>5 Menit</option>
  <option>6 Menit</option>
  <option>7 Menit</option>

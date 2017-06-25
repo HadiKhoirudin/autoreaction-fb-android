@@ -1,12 +1,14 @@
  <?php
+error_reporting(0);
+ini_set('display_errors', '0');
+ini_set('max_execution_time', 800);
+
 session_start();
 if (isset($_SESSION['user'])) {
     $user		= $_SESSION['user'];
     $pass		= $_SESSION['pass'];
 	$token		= $_SESSION['token'];
 	$max_status = $_SESSION['max_status'];
-ini_set('max_execution_time', 150);
-
 class Reaction
 {
 	
@@ -46,7 +48,7 @@ class Reaction
 		global $config, $sock;
 		$curl = curl_init($url);
 		curl_setopt($curl, CURLOPT_NOBODY, $header);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 150);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 800);
 		curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0');
 		if ($var) {
 			curl_setopt($curl, CURLOPT_POST, true);
@@ -87,9 +89,9 @@ class Reaction
 			$gen_url 	= 'https://graph.facebook.com/'.$post_id[0].'?access_token='.$token;
 			$gen_data	= file_get_contents($gen_url, false, stream_context_create($arrContextOptions));
 			$gen_data 	= json_decode($gen_data, true);
-			$gender 	= $gen_data['gender'];
-			
-			if($gender == 'female')
+			$gender_data = $gen_data['gender'];
+
+			if($gender_data == 'female')
 			{
 				$jk_p		= 'Cewe';
 				$r_females 	= '/ufi/reaction/?ft_ent_identifier='.$post_id[1].'&reaction_type='.$r_female;
@@ -115,7 +117,7 @@ class Reaction
 				    $reemotf_f = 'Angka diluar jangkauan';
  				   break;
 				}
-				echo "<br><center>Status ID $post_id[1] => $jk_p => $reemotf_f \n";
+				echo "<br><center><font color='purple'>Status ID $post_id[1] => $jk_p => $reemotf_f</font> \n";
 			}else{
 				$jk_l		= 'Cowo';
 				$r_males 	= '/ufi/reaction/?ft_ent_identifier='.$post_id[1].'&reaction_type='.$r_male;
@@ -141,11 +143,11 @@ class Reaction
 				    $reemotm_m = 'Angka diluar jangkauan';
  				   break;
 				}
-				echo "<br><center>Status ID $post_id[1] => $jk_l => $reemotm_m \n";
+				echo "<br><center><font color='green'>Status ID $post_id[1] => $jk_l => $reemotm_m</font> \n";
 			}
 			
 			$this->curl('https://mobile.facebook.com/logout.php');
-			sleep(2);
+			sleep(3);
 		}
 		
 
@@ -155,14 +157,14 @@ class Reaction
 	
 }
 
-require_once('../config/emot.php');
+
 
 $config['cookie_file'] = 'cookie.txt';
 if (!file_exists($config['cookie_file'])) {
     $fp = @fopen($config['cookie_file'], 'w');
     @fclose($fp);
 }
-
+require_once('../config/emot.php');
 $reaction = new Reaction();
 $reaction->send_reaction($user, $pass, $token, $r_male, $r_female, $max_status);
 }

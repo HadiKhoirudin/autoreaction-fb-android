@@ -13,6 +13,8 @@
 require_once('view/input.php');
 echo
 '
+
 <div id="load_content"></div>
+<hr>
 ';
 ?>
